@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "CodeSync",
+    "version": "0.1.0",
+    "identifier": "com.codesync.app",
+    "build": {
+        "beforeDevCommand": "pnpm dev",
+        "devUrl": "http://localhost:3000",
+        "beforeBuildCommand": "pnpm build",
+        "frontendDist": "../.next"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "CodeSync",
+                "width": 1440,
+                "height": 900,
+                "minWidth": 900,
+                "minHeight": 600,
+                "resizable": true,
+                "fullscreen": false,
+                "decorations": true
+            }
+        ],
+        "security": {
+            "csp": "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss:;"
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": "all",
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "category": "DeveloperTool",
+        "shortDescription": "Real-time collaborative code editor",
+        "longDescription": "CodeSync is a real-time collaborative code editor with Monaco, WebContainers, Yjs CRDT sync, and AI completions. Works in the browser or as a native desktop app.",
+        "copyright": "© 2025 CodeSync"
+    },
+    "plugins": {
+        "fs": {
+            "all": false,
+            "readFile": true,
+            "writeFile": true,
+            "readDir": true,
+            "copyFile": false,
+            "createDir": true,
+            "removeDir": false,
+            "removeFile": false,
+            "renameFile": true,
+            "exists": true,
+            "scope": {
+                "allow": [
+                    {
+                        "path": "$DOCUMENT/**"
+                    },
+                    {
+                        "path": "$DOWNLOAD/**"
+                    }
+                ]
+            }
+        },
+        "shell": {
+            "all": false
+        }
+    }
+}

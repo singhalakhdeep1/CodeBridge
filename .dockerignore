@@ -1,0 +1,11 @@
+.next/
+node_modules/
+.env*
+!.env.example
+*.log
+.DS_Store
+coverage/
+playwright-report/
+test-results/
+.turbo/
+src-tauri/target/

@@ -1,0 +1,66 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.next
+build
+out
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Turbo
+.turbo
+
+# Coverage
+coverage
+.nyc_output
+
+# Sentry
+.sentryclirc
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/Cargo.lock
+
+# Docker volumes
+postgres_data
+redis_data
+
+# Uploads / temp
+uploads
+tmp
+
+# Hocuspocus server
+hocuspocus-server/node_modules
+
+# Wrangler
+.wrangler/

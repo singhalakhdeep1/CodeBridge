@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 13% 9%;
+    --foreground: 220 9% 92%;
+    --card: 220 13% 11%;
+    --card-foreground: 220 9% 92%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 220 9% 92%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 220 13% 9%;
+    --secondary: 220 13% 16%;
+    --secondary-foreground: 220 9% 75%;
+    --muted: 220 13% 16%;
+    --muted-foreground: 220 9% 55%;
+    --accent: 220 13% 20%;
+    --accent-foreground: 220 9% 92%;
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 220 9% 92%;
+    --border: 220 13% 18%;
+    --input: 220 13% 18%;
+    --ring: 217 91% 60%;
+    --radius: 0.5rem;
+
+    /* Editor-specific */
+    --editor-bg: 220 13% 8%;
+    --editor-line-highlight: 220 13% 12%;
+    --editor-selection: 217 91% 30%;
+    --sidebar-bg: 220 13% 10%;
+    --tab-bg: 220 13% 11%;
+    --tab-active-bg: 220 13% 8%;
+    --status-bar-bg: 217 91% 40%;
+  }
+
+  /* CodeSync is dark-first (code editors always are) */
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 220 13% 9%;
+    --card: 0 0% 98%;
+    --card-foreground: 220 13% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 9%;
+    --primary: 217 91% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 94%;
+    --secondary-foreground: 220 13% 20%;
+    --muted: 220 13% 94%;
+    --muted-foreground: 220 9% 45%;
+    --accent: 220 13% 92%;
+    --accent-foreground: 220 13% 9%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 217 91% 50%;
+    --editor-bg: 0 0% 100%;
+    --editor-line-highlight: 220 13% 97%;
+    --editor-selection: 217 91% 85%;
+    --sidebar-bg: 220 13% 96%;
+    --tab-bg: 220 13% 94%;
+    --tab-active-bg: 0 0% 100%;
+    --status-bar-bg: 217 91% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+    overflow: hidden; /* Editor fills entire viewport */
+  }
+}
+
+/* Custom scrollbar — minimal, dark */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Monaco editor overrides */
+.monaco-editor .margin {
+  background: hsl(var(--editor-bg)) !important;
+}
+.monaco-editor-background {
+  background: hsl(var(--editor-bg)) !important;
+}
+.monaco-editor .current-line {
+  background: hsl(var(--editor-line-highlight)) !important;
+}
+
+/* Collaborator cursor decorations */
+.yRemoteSelection {
+  background-color: var(--collaborator-color, #4ecdc4);
+  opacity: 0.3;
+}
+.yRemoteCursor {
+  border-left: 2px solid var(--collaborator-color, #4ecdc4);
+  margin-left: -1px;
+}
+.yRemoteCursor::before {
+  content: attr(data-username);
+  position: absolute;
+  top: -1.4em;
+  left: -1px;
+  padding: 1px 4px;
+  border-radius: 3px 3px 3px 0;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--collaborator-color, #4ecdc4);
+  color: #000;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* File tree animations */
+.file-tree-item {
+  @apply transition-colors duration-100;
+}
+
+/* Status bar pulse for active collaboration */
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.status-collaborating {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+/* Tab close button — show on hover */
+.editor-tab:hover .tab-close {
+  opacity: 1;
+}
+.tab-close {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* Resize handle */
+.resize-handle {
+  @apply absolute inset-y-0 right-0 w-1 cursor-col-resize hover:bg-primary/50 transition-colors;
+}
+.resize-handle-horizontal {
+  @apply absolute inset-x-0 bottom-0 h-1 cursor-row-resize hover:bg-primary/50 transition-colors;
+}

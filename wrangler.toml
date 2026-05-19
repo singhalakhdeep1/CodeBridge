@@ -1,0 +1,36 @@
+name = "codesync-collab"
+main = "src/worker.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ─── Durable Objects ──────────────────────────────────────────────────────────
+# Each document room is backed by a Durable Object instance.
+# The DO holds the authoritative Yjs state vector and broadcasts ops to all
+# connected WebSocket clients — replacing a self-hosted Hocuspocus server for
+# production edge deployments.
+
+[[durable_objects.bindings]]
+name = "COLLAB_ROOM"
+class_name = "CollabRoom"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["CollabRoom"]
+
+# ─── KV (session cache) ───────────────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "REPLACE_WITH_YOUR_KV_ID"
+preview_id = "REPLACE_WITH_YOUR_KV_PREVIEW_ID"
+
+# ─── R2 (document snapshots) ─────────────────────────────────────────────────
+[[r2_buckets]]
+binding = "DOC_SNAPSHOTS"
+bucket_name = "codesync-snapshots"
+
+# ─── Environment variables ────────────────────────────────────────────────────
+[vars]
+SUPABASE_URL = ""  # set via `wrangler secret put`
+
+[env.production]
+name = "codesync-collab-prod"

@@ -1,0 +1,44 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "create": "Create",
+        "loading": "Loading…",
+        "error": "Something went wrong",
+        "settings": "Settings",
+        "search": "Search"
+    },
+    "editor": {
+        "untitled": "Untitled",
+        "run": "Run",
+        "ai": "AI",
+        "analytics": "Analytics",
+        "terminal": "Terminal",
+        "collaborators": "Collaborators",
+        "liveSession": "Live",
+        "commandPalette": "Search commands and files…",
+        "noResults": "No results found.",
+        "shortcuts": {
+            "commandPalette": "⌘K — Open command palette",
+            "toggleTerminal": "⌃` — Toggle terminal",
+            "toggleAI": "⌘I — Toggle AI panel",
+            "saveFile": "⌘S — Save file"
+        }
+    },
+    "workspace": {
+        "createFile": "New File",
+        "deleteFile": "Delete File",
+        "renameFile": "Rename File",
+        "filesTitle": "Files",
+        "workspaceSettings": "Workspace Settings"
+    },
+    "auth": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "signOut": "Sign Out",
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?"
+    }
+}
