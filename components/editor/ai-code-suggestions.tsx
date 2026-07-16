@@ -35,33 +35,32 @@ export default function AICodeSuggestions({
   const generateSuggestions = async () => {
     setIsLoading(true);
     
-    // In production, integrate with OpenAI API or similar
-    // This is a placeholder implementation
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/ai/suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: currentCode, language }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to generate suggestions');
+      
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+    } catch (error) {
+      console.error('Error generating suggestions:', error);
+      // Fallback to mock suggestions on error
       const mockSuggestions: AISuggestion[] = [
         {
           id: '1',
           code: `// Optimized version\n${currentCode.trim()}\n// Added error handling`,
           description: 'Optimize code with error handling',
           confidence: 0.92
-        },
-        {
-          id: '2',
-          code: `// Refactored version\nconst optimized = ${currentCode.trim()}`,
-          description: 'Refactor for better performance',
-          confidence: 0.85
-        },
-        {
-          id: '3',
-          code: `// TypeScript version\ninterface Data {\n  // Add types here\n}\n${currentCode.trim()}`,
-          description: 'Add TypeScript types',
-          confidence: 0.78
         }
       ];
-      
       setSuggestions(mockSuggestions);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleCopy = (code: string, id: string) => {

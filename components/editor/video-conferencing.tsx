@@ -108,14 +108,122 @@ export default function VideoConferencing({ roomId, onEnd }: VideoConferencingPr
   };
 
   const joinRoom = async () => {
-    // In production, integrate with WebRTC signaling server
-    setIsConnected(true);
-    setParticipants(['user1', 'user2', 'user3']);
+    try {
+      const ws = new WebSocket('ws://localhost:3001');
+      
+      ws.onopen = () => {
+        ws.send(JSON.stringify({
+          type: 'join-room',
+          roomId,
+          userId: 'current-user'
+        }));
+      };
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        switch (data.type) {
+          case 'room-joined':
+            setIsConnected(true);
+            setParticipants(data.participants.map((p: any) => p.userId));
+            break;
+          case 'user-joined':
+            setParticipants(prev => [...prev, data.userId]);
+            break;
+          case 'user-left':
+            setParticipants(prev => prev.filter(id => id !== data.userId));
+            break;
+          case 'offer':
+            handleOffer(data);
+            break;
+          case 'answer':
+            handleAnswer(data);
+            break;
+          case 'ice-candidate':
+            handleIceCandidate(data);
+            break;
+        }
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+      
+      ws.onclose = () => {
+        setIsConnected(false);
+      };
+      
+      // Store WebSocket ref for cleanup
+      (ws as any).roomId = roomId;
+      peerConnections.current.set('signaling', ws as any);
+      
+    } catch (error) {
+      console.error('Error joining room:', error);
+    }
   };
 
   const leaveRoom = () => {
     cleanup();
     onEnd?.();
+  };
+
+  const handleOffer = async (data: any) => {
+    const { offer, sourceClientId } = data;
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+    
+    peerConnections.current.set(sourceClientId, pc);
+    
+    localStream?.getTracks().forEach(track => {
+      pc.addTrack(track, localStream);
+    });
+    
+    pc.ontrack = (event) => {
+      setRemoteStreams(prev => new Map(prev).set(sourceClientId, event.streams[0]));
+    };
+    
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        const signalingWs = peerConnections.current.get('signaling');
+        if (signalingWs?.readyState === WebSocket.OPEN) {
+          signalingWs.send(JSON.stringify({
+            type: 'ice-candidate',
+            candidate: event.candidate,
+            targetClientId: sourceClientId
+          }));
+        }
+      }
+    };
+    
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    
+    const signalingWs = peerConnections.current.get('signaling');
+    if (signalingWs?.readyState === WebSocket.OPEN) {
+      signalingWs.send(JSON.stringify({
+        type: 'answer',
+        answer,
+        targetClientId: sourceClientId
+      }));
+    }
+  };
+
+  const handleAnswer = async (data: any) => {
+    const { answer, sourceClientId } = data;
+    const pc = peerConnections.current.get(sourceClientId);
+    if (pc) {
+      await pc.setRemoteDescription(new RTCSessionDescription(answer));
+    }
+  };
+
+  const handleIceCandidate = async (data: any) => {
+    const { candidate, sourceClientId } = data;
+    const pc = peerConnections.current.get(sourceClientId);
+    if (pc) {
+      await pc.addIceCandidate(new RTCIceCandidate(candidate));
+    }
   };
 
   const cleanup = () => {
