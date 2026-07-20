@@ -1,8 +1,6 @@
 # CodeSync
 
-> Real-time collaborative code editor — Monaco Editor + Yjs CRDT + Next.js 15
-
-**Resume bullet:** _"Implemented CRDT-based real-time sync (Yjs) — conflict-free collaborative editing for 50+ simultaneous users tested locally; integrated Monaco Editor with OpenAI streaming completions"_
+A real-time collaborative code editor built with Monaco Editor, Yjs CRDT, and Next.js 15. Features conflict-free collaborative editing for multiple simultaneous users with OpenAI streaming completions.
 
 ---
 
@@ -40,7 +38,7 @@
 
 ---
 
-## Stack
+## Tech Stack
 
 - **Framework:** Next.js 15.3.1 (App Router, Turbopack, TypeScript strict)
 - **Editor:** Monaco Editor (`@monaco-editor/react`) — VS Code in the browser
@@ -123,3 +121,9 @@ npm run test:e2e       # Playwright E2E
 2. On success → Vercel deploy via `amondnet/vercel-action`
 3. Set all env vars in Vercel dashboard
 4. Deploy a Hocuspocus WebSocket server separately (e.g. Railway, Fly.io)
+
+---
+
+## 📝 License
+
+Proprietary - All rights reserved.
