@@ -25,6 +25,7 @@ CREATE TABLE profiles (
 CREATE TABLE workspaces (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
+  description TEXT,
   slug TEXT UNIQUE NOT NULL,
   owner_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'team')),
@@ -128,6 +129,28 @@ CREATE TABLE execution_runs (
 
 CREATE INDEX idx_exec_runs_document ON execution_runs(document_id, created_at DESC);
 
+-- GraphQL collaboration sessions. These replace the former in-memory resolver store.
+CREATE TABLE collaboration_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  content TEXT NOT NULL DEFAULT '',
+  language TEXT NOT NULL DEFAULT 'typescript',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE collaboration_session_participants (
+  session_id UUID NOT NULL REFERENCES collaboration_sessions(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  left_at TIMESTAMPTZ,
+  PRIMARY KEY (session_id, user_id)
+);
+
+CREATE INDEX idx_collaboration_sessions_project ON collaboration_sessions(project_id, updated_at DESC);
+
 -- =============================================
 -- ROW LEVEL SECURITY
 -- =============================================
@@ -139,6 +162,8 @@ ALTER TABLE document_versions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE edit_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE execution_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collaboration_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collaboration_session_participants ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: anyone can read, owner can write
 CREATE POLICY "profiles_public_read" ON profiles FOR SELECT USING (TRUE);
@@ -201,6 +226,17 @@ CREATE POLICY "exec_runs_member_read" ON execution_runs FOR SELECT
   ));
 CREATE POLICY "exec_runs_user_insert" ON execution_runs FOR INSERT WITH CHECK (user_id = auth.uid());
 
+CREATE POLICY "sessions_member_read" ON collaboration_sessions FOR SELECT USING (
+  project_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid())
+);
+CREATE POLICY "sessions_member_write" ON collaboration_sessions FOR ALL USING (
+  project_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'editor'))
+);
+CREATE POLICY "session_participants_read" ON collaboration_session_participants FOR SELECT USING (
+  session_id IN (SELECT id FROM collaboration_sessions)
+);
+CREATE POLICY "session_participants_write" ON collaboration_session_participants FOR ALL USING (user_id = auth.uid());
+
 -- =============================================
 -- FUNCTIONS & TRIGGERS
 -- =============================================
@@ -252,6 +288,8 @@ CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles
 CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER update_collaboration_sessions_updated_at BEFORE UPDATE ON collaboration_sessions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- =============================================
