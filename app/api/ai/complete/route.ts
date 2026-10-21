@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
     const parsed = aiCompletionSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
-    const { code, language, cursor_position } = parsed.data;
+    const { prefix, suffix, language } = parsed.data;
 
-    const userMessage = `Language: ${language}\n\nCode context (cursor at position ${cursor_position ?? "end"}):\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide a concise code completion.`;
+    const userMessage = `Language: ${language}\n\nCode before cursor:\n\`\`\`${language}\n${prefix}\n\`\`\`\n\nCode after cursor:\n\`\`\`${language}\n${suffix}\n\`\`\`\n\nProvide a concise code completion to insert at the cursor.`;
 
     const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",

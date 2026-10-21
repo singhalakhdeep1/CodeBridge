@@ -19,17 +19,18 @@
 import { bus } from "@/lib/events/event-bus";
 import type { DocumentChangedEvent } from "@/lib/events/event-types";
 
-/** Yjs WebSocketProvider interface (subset needed for syncing) */
-interface WebSocketProvider {
+/** Minimal provider interface — supports both y-websocket and Hocuspocus */
+interface CollabProvider {
     connect(): void;
     disconnect(): void;
-    readonly wsconnected: boolean;
+    readonly wsconnected?: boolean;
+    readonly isConnected?: boolean;
     on(event: "status", handler: (event: { status: string }) => void): void;
 }
 
 let statusListeners: Array<(connected: boolean) => void> = [];
 
-export function registerSyncHandler(getProvider: () => WebSocketProvider | null) {
+export function registerSyncHandler(getProvider: () => CollabProvider | null) {
     // When we receive a local document change, ensure we're connected
     const unsub = bus.on<DocumentChangedEvent>("document.changed", (event) => {
         if (event.origin !== "local") return;
@@ -37,8 +38,8 @@ export function registerSyncHandler(getProvider: () => WebSocketProvider | null)
         const provider = getProvider();
         if (!provider) return;
 
-        // If somehow disconnected, reconnect
-        if (!provider.wsconnected) {
+        const connected = provider.wsconnected ?? provider.isConnected ?? false;
+        if (!connected) {
             console.warn("[SyncHandler] Not connected, reconnecting...");
             provider.connect();
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditorStore } from "@/lib/stores/use-editor-store";
+import { useEditorStore } from "@/lib/stores/editor-store";
 import { cn } from "@/lib/utils";
 import { Wifi, WifiOff, Loader2, Users } from "lucide-react";
 
