@@ -12,13 +12,13 @@ import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
     const router = useRouter();
-    const supabase = createClient();
 
     const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RegisterInput>({
         resolver: zodResolver(registerSchema),
     });
 
     async function onSubmit(data: RegisterInput) {
+        const supabase = createClient();
         const { error } = await supabase.auth.signUp({
             email: data.email,
             password: data.password,

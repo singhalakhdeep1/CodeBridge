@@ -53,7 +53,7 @@ export function getLanguageFromPath(path: string): Language {
         md: "markdown",
         sh: "bash", bash: "bash",
     };
-    return (ext && map[ext]) ?? "typescript";
+    return (ext ? map[ext] : undefined) ?? "typescript";
 }
 
 export function formatBytes(bytes: number): string {

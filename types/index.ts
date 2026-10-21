@@ -42,6 +42,9 @@ export interface Workspace {
     slug: string;
     owner_id: string;
     plan: WorkspacePlan;
+    description?: string | null;
+    max_members?: number;
+    max_documents?: number;
     created_at: string;
     updated_at: string | null;
 }

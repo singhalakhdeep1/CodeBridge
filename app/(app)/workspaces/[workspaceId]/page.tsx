@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { WorkspaceEmptyState } from "@/components/workspaces/workspace-empty-state";
 
-export default async function WorkspacePage({ params }: { params: { workspaceId: string } }) {
+export default async function WorkspacePage({ params }: { params: Promise<{ workspaceId: string }> }) {
     const { workspaceId } = await params;
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();

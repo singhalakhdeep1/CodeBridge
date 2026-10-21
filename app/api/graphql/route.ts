@@ -4,9 +4,11 @@ import { resolvers, typeDefs, pubsub } from '@/lib/graphql/resolvers';
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest } from 'next/server';
 
+export const dynamic = "force-dynamic";
+
 const server = new ApolloServer({ typeDefs, resolvers });
 
-const handler = startServerAndCreateNextHandler<NextRequest>(server, {
+const _handler = startServerAndCreateNextHandler<NextRequest>(server as any, {
     context: async (req) => {
         const supabase = await createClient();
         const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -29,4 +31,10 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
     },
 });
 
-export { handler as GET, handler as POST };
+export async function GET(req: NextRequest) {
+    return _handler(req);
+}
+
+export async function POST(req: NextRequest) {
+    return _handler(req);
+}

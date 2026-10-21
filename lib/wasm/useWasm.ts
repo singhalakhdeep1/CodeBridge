@@ -25,6 +25,8 @@ export function useWasm() {
         setError(null);
 
         // Load WASM module
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore — WASM pkg generated at build time
         const wasmModule = await import('@/wasm/pkg/codebridge_wasm');
         
         if (mounted) {
@@ -73,7 +75,7 @@ export function useWasmOperation<T extends (...args: any[]) => any>(
       try {
         setLoading(true);
         setError(null);
-        const res = await operation(...args);
+        const res = await operation!(...args);
         if (mounted) {
           setResult(res);
           setLoading(false);

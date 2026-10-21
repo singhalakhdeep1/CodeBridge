@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ documentId: string }> }) {
     const { documentId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest, { params }: { params: { documentId:
     return NextResponse.json(data, { status: 201 });
 }
 
-export async function GET(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ documentId: string }> }) {
     const { documentId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

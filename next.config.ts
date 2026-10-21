@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
     // Turbopack alias — mirrors the webpack alias below (Turbopack ignores webpack config)
     turbopack: {
         resolveAlias: {
-            "monaco-editor": "monaco-editor/esm/vs/editor/editor.api",
+            "monaco-editor$": "monaco-editor/esm/vs/editor/editor.api",
         },
     },
     async headers() {
@@ -64,8 +64,8 @@ const nextConfig: NextConfig = {
         if (isServer) return config;
         config.resolve.alias = {
             ...config.resolve.alias,
-            // Worker imports from monaco-editor
-            "monaco-editor": "monaco-editor/esm/vs/editor/editor.api",
+            // Exact alias so y-monaco sub-path imports are not rewritten
+            "monaco-editor$": "monaco-editor/esm/vs/editor/editor.api",
         };
         return config;
     },

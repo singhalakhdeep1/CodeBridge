@@ -14,7 +14,7 @@ async function getMemberRole(supabase: Awaited<ReturnType<typeof createClient>>,
     return member?.role ?? null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ documentId: string }> }) {
     const { documentId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: { documentId: 
     return NextResponse.json(data);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ documentId: string }> }) {
     const { documentId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { documentId
     return NextResponse.json(data);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ documentId: string }> }) {
     const { documentId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

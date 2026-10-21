@@ -1,7 +1,7 @@
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { CookieOptions } from "@supabase/ssr";
 
-// Alias so both import names work across the codebase
 export const createClient = createServerClient;
 
 export async function createServerClient() {
@@ -12,7 +12,7 @@ export async function createServerClient() {
         {
             cookies: {
                 getAll() { return cookieStore.getAll(); },
-                setAll(cookiesToSet) {
+                setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
                     try {
                         cookiesToSet.forEach(({ name, value, options }) =>
                             cookieStore.set(name, value, options)
